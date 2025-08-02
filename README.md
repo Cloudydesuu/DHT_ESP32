@@ -1,14 +1,6 @@
 # DHT ESP32 Library
 
 ## 1. Installation
-
-### PlatformIO Library Registry
-Add to your project's `platformio.ini` file:
-```ini
-lib_deps = 
-    DHT_ESP32
-```
-
 ### PlatformIO GitHub
 Add to your project's `platformio.ini` file:
 ```ini
@@ -57,12 +49,29 @@ esp_err_t dht11_read(dht11_data *data);
 
 ## 3. Working Principle
 
+![DHT11 Communication Protocol](docs/images/dht11_protocol.png)
+
 - The DHT11 sensor communicates with ESP32 via a single GPIO pin.
 - The data reading process includes:
     1. ESP32 sends a start signal to DHT11 (hold low for at least 18ms).
     2. DHT11 responds with high/low signals for confirmation.
     3. DHT11 sends 40 bits of data (temperature, humidity, checksum) to ESP32.
     4. ESP32 checks the checksum to validate the data.
+
+### Signal Timing Details:
+- **Start Signal**: Pull data line low for 18-20ms, then high for 20-40μs
+- **Response Signal**: DHT11 pulls low for 80μs, then high for 80μs  
+- **Data Transmission**: Each bit represented by low (50μs) + high (26-28μs for '0', 70μs for '1')
+
+### Hardware Setup:
+```
+DHT11 Sensor    ESP32
+-----------    ------
+VCC        ->  3.3V
+GND        ->  GND
+DATA       ->  GPIO
+```
+
 - The interval between readings should be at least 2 seconds for stable sensor operation.
 
 ---
